@@ -1,4 +1,4 @@
-var camera, controls;
+var camera, controls, controls2;
 
 var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
 
@@ -9,11 +9,11 @@ if(havePointerLock) {
         if(document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
 
             controlsEnabled = true;
-            controls.enabled = true;
+            controls2.enabled = true;
 
         }else{
 
-            controls.enabled = false;
+            controls2.enabled = false;
 
         }
     };
@@ -36,6 +36,9 @@ var renderer = new THREE.WebGLRenderer();
 renderer.setClearColor(0xffffff);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+var effect = new THREE.CardboardEffect(renderer);
+effect.setSize(window.innerWidth, window.innerHeight);
 
 var geometry = new THREE.BoxGeometry(20, 20, 20);
 var number = 30;
@@ -60,8 +63,10 @@ directional.position.set(0, 50, 0).normalize();
 scene.add(directional);
 
 //camera.position.z = 5;
-controls = new THREE.PointerLockControls(camera);
-scene.add(controls.getObject());
+controls2 = new THREE.PointerLockControls(camera);
+controls = new THREE.DeviceOrientationControls(camera);
+scene.add(controls2.getObject());
+controls.connect();
 
 function render() {
     requestAnimationFrame(render);
@@ -71,6 +76,7 @@ function render() {
         object.rotation.x += 0.05;
         object.rotation.z += 0.03;
     }
-    renderer.render(scene, camera);
+    controls.update();
+    effect.render(scene, camera);
 }
 render();
